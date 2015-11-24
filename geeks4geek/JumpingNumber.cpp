@@ -12,26 +12,32 @@
 
 using namespace std;
 
-vector<int> getAdjacent(int x)
+/*
+ * Given a number x, find it's connected vertices by
+ * keeping x constant. i.e.
+ * if x = 12, then its connected vertices are 121 and 123
+ */
+void pushAdjacent(queue<int> &q, int x, int max)
 {
-    vector<int> result;
-    
-    if (x < 9) {
-        result.push_back(x+1);
-    }
+    if (x < 9)
+        q.push(x+1);
     
     if (x == 0)
-        return result;
+        return;
     
     int lastDigit = x % 10;
     
-    if (lastDigit != 9)
-        result.push_back(x*10 + lastDigit + 1);
+    if (lastDigit != 9) {
+        int tmp = 10*x + lastDigit + 1;
+        if (tmp < max)
+            q.push(tmp);
+    }
     
-    if (lastDigit != 0)
-        result.push_back(x*10 + lastDigit - 1);
-    
-    return result;
+    if (lastDigit != 0) {
+        int tmp = 10*x + lastDigit - 1;
+        if (tmp < max)
+            q.push(tmp);
+    }
 }
 
 // Use BFS to find all jumping nodes
@@ -46,12 +52,7 @@ vector<int> getJumping(int x)
         q.pop();
         
         result.push_back(current);
-        vector<int> adjacent = getAdjacent(current);
-        for (int i = 0; i != adjacent.size(); i++) {
-            if (adjacent[i] <= x) {
-                q.push(adjacent[i]);
-            }
-        }
+        pushAdjacent(q, current, x);
     }
     
     return result;
